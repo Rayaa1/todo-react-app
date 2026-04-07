@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
-import "./App.css"
+import "./App.css";
 
 function App() {
+  // State for todos, users, and request status
   const [todos, setTodos] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // State for filtering, sorting, and pagination
   const [selectedUser, setSelectedUser] = useState("all");
   const [sortOrder, setSortOrder] = useState("default");
   const [visibleCount, setVisibleCount] = useState(10);
   const [completedSort, setCompletedSort] = useState("default");
 
+  // Fetch todos and users once when component mounts
   useEffect(() => {
     Promise.all([
       fetch("https://jsonplaceholder.typicode.com/todos"),
@@ -34,6 +37,7 @@ function App() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Mark a todo as completed and add completion date
   function handleComplete(id) {
     setTodos(
       todos.map((todo) =>
@@ -48,6 +52,7 @@ function App() {
     );
   }
 
+  // Mark a todo as not completed and remove completion date
   function handleUncomplete(id) {
     setTodos(
       todos.map((todo) =>
@@ -62,12 +67,13 @@ function App() {
     );
   }
 
-  // Помощна функция за намиране на името на потребителя
+  // Get username by userId
   const getUserName = (userId) => {
     const user = users.find((u) => u.id === userId);
     return user ? user.username : `User ${userId}`;
   };
 
+  // Filter todos by selected user
   const filteredTodos =
     selectedUser === "all"
       ? todos
@@ -75,6 +81,7 @@ function App() {
 
   let uncompletedTodos = filteredTodos.filter((todo) => !todo.completed);
 
+  // Sort uncompleted todos by title
   if (sortOrder === "asc") {
     uncompletedTodos.sort((a, b) => a.title.localeCompare(b.title));
   } else if (sortOrder === "desc") {
@@ -83,6 +90,7 @@ function App() {
 
   let completedTodos = filteredTodos.filter((todo) => todo.completed);
 
+  // Sort completed todos by completion date
   completedTodos.sort((a, b) => {
     const dateA = new Date(a.completedAt || 0);
     const dateB = new Date(b.completedAt || 0);
@@ -151,6 +159,7 @@ function App() {
               <h2>Uncompleted:</h2>
             </div>
 
+            {/* Show message if no uncompleted todos */}
             {uncompletedTodos.length === 0 ? (
               <p className="empty">No todos found.</p>
             ) : (
@@ -162,6 +171,7 @@ function App() {
                       <p className="todo-meta">User: {getUserName(todo.userId)}</p>
                     </div>
 
+                    {/* Complete todo */}
                     <button onClick={() => handleComplete(todo.id)}>
                       Complete
                     </button>
@@ -170,6 +180,7 @@ function App() {
               </ul>
             )}
 
+            {/* Load more todos */}
             {visibleCount < uncompletedTodos.length && (
               <button
                 className="load-more"
@@ -197,6 +208,7 @@ function App() {
               <h2>Completed:</h2>
             </div>
 
+            {/* Show message if no completed todos */}
             {completedTodos.length === 0 ? (
               <p className="empty">No completed todos.</p>
             ) : (
@@ -207,6 +219,7 @@ function App() {
                       <p className="todo-title">{todo.title}</p>
                       <p className="todo-meta">User: {getUserName(todo.userId)}</p>
 
+                      {/* Show completion date */}
                       {todo.completedAt && (
                         <p className="completed-date">
                           Done on:{" "}
@@ -215,6 +228,7 @@ function App() {
                       )}
                     </div>
 
+                    {/* Uncomplete todo */}
                     <button onClick={() => handleUncomplete(todo.id)}>
                       Uncomplete
                     </button>
