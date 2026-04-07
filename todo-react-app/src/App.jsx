@@ -9,6 +9,7 @@ function App() {
   const [selectedUser, setSelectedUser] = useState("all");
   const [sortOrder, setSortOrder] = useState("default");
   const [visibleCount, setVisibleCount] = useState(10);
+  const [completedSort, setCompletedSort] = useState("default");
 
   useEffect(() => {
     Promise.all([
@@ -67,8 +68,20 @@ function App() {
     uncompletedTodos.sort((a, b) => b.title.localeCompare(a.title));
   }
 
-  // COMPLETED
-  const completedTodos = filteredTodos.filter((t) => t.completed);
+  // COMPLETED + SORT
+  let completedTodos = filteredTodos.filter((t) => t.completed);
+
+  if (completedSort === "asc") {
+    completedTodos.sort(
+      (a, b) => new Date(a.completedAt) - new Date(b.completedAt)
+    );
+  }
+
+  if (completedSort === "desc") {
+    completedTodos.sort(
+      (a, b) => new Date(b.completedAt) - new Date(a.completedAt)
+    );
+  }
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -80,7 +93,10 @@ function App() {
       {/* FILTER BY USERNAME */}
       <div>
         <label>Filter by user:</label>
-        <select onChange={(e) => setSelectedUser(e.target.value)}>
+        <select
+          value={selectedUser}
+          onChange={(e) => setSelectedUser(e.target.value)}
+        >
           <option value="all">All users</option>
 
           {users.map((user) => (
@@ -93,7 +109,10 @@ function App() {
 
       <div>
         <label>Sort uncompleted:</label>
-        <select onChange={(e) => setSortOrder(e.target.value)}>
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+        >
           <option value="default">Default</option>
           <option value="asc">A-Z</option>
           <option value="desc">Z-A</option>
@@ -106,9 +125,7 @@ function App() {
         {uncompletedTodos.slice(0, visibleCount).map((todo) => (
           <div key={todo.id}>
             {todo.title}
-            <button onClick={() => handleComplete(todo.id)}>
-              Complete
-            </button>
+            <button onClick={() => handleComplete(todo.id)}>Complete</button>
           </div>
         ))}
 
@@ -121,11 +138,30 @@ function App() {
       </div>
 
       <div>
+        <label>Sort by completed date:</label>
+        <select
+          value={completedSort}
+          onChange={(e) => setCompletedSort(e.target.value)}
+        >
+          <option value="default">Default</option>
+          <option value="asc">Oldest first</option>
+          <option value="desc">Newest first</option>
+        </select>
+      </div>
+
+      <div>
         <h2>Completed Todos</h2>
 
         {completedTodos.slice(0, 10).map((todo) => (
           <div key={todo.id}>
-            {todo.title}
+            <div>{todo.title}</div>
+
+            {todo.completedAt && (
+              <small>
+                Completed on: {new Date(todo.completedAt).toLocaleString()}
+              </small>
+            )}
+
             <button onClick={() => handleUncomplete(todo.id)}>
               Uncomplete
             </button>
