@@ -8,6 +8,7 @@ function App() {
 
   const [selectedUser, setSelectedUser] = useState("all");
   const [sortOrder, setSortOrder] = useState("default");
+  const [visibleCount, setVisibleCount] = useState(10);
 
   useEffect(() => {
     Promise.all([
@@ -89,6 +90,7 @@ function App() {
           ))}
         </select>
       </div>
+
       <div>
         <label>Sort uncompleted:</label>
         <select onChange={(e) => setSortOrder(e.target.value)}>
@@ -97,10 +99,11 @@ function App() {
           <option value="desc">Z-A</option>
         </select>
       </div>
+
       <div>
         <h2>Uncompleted Todos</h2>
 
-        {uncompletedTodos.slice(0, 10).map((todo) => (
+        {uncompletedTodos.slice(0, visibleCount).map((todo) => (
           <div key={todo.id}>
             {todo.title}
             <button onClick={() => handleComplete(todo.id)}>
@@ -108,7 +111,15 @@ function App() {
             </button>
           </div>
         ))}
+
+        {/* LOAD MORE BUTTON */}
+        {visibleCount < uncompletedTodos.length && (
+          <button onClick={() => setVisibleCount(visibleCount + 10)}>
+            Load More
+          </button>
+        )}
       </div>
+
       <div>
         <h2>Completed Todos</h2>
 
