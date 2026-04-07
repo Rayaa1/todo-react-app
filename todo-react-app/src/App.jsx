@@ -2,40 +2,38 @@ import { useEffect, useState } from "react";
 
 function App() {
   const [todos, setTodos] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [selectedUser, setSelectedUser] = useState("all");
+  const [sortOrder, setSortOrder] = useState("default");
+
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/todos")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch todos");
-        }
-        return response.json();
+    Promise.all([
+      fetch("https://jsonplaceholder.typicode.com/todos"),
+      fetch("https://jsonplaceholder.typicode.com/users"),
+    ])
+      .then(([todosRes, usersRes]) => {
+        return Promise.all([todosRes.json(), usersRes.json()]);
       })
-      .then((data) => {
-        setTodos(data);
+      .then(([todosData, usersData]) => {
+        setTodos(todosData);
+        setUsers(usersData);
       })
       .catch(() => {
-        setError("Something went wrong while loading todos.");
+        setError("Error loading data");
       })
       .finally(() => {
         setLoading(false);
       });
   }, []);
 
-  const uncompletedTodos = todos.filter((todo) => !todo.completed);
-  const completedTodos = todos.filter((todo) => todo.completed);
-
   function handleComplete(id) {
     setTodos(
       todos.map((todo) =>
         todo.id === id
-          ? {
-              ...todo,
-              completed: true,
-              completedAt: new Date().toISOString(), // за future extra
-            }
+          ? { ...todo, completed: true, completedAt: new Date().toISOString() }
           : todo
       )
     );
@@ -45,48 +43,78 @@ function App() {
     setTodos(
       todos.map((todo) =>
         todo.id === id
-          ? {
-              ...todo,
-              completed: false,
-              completedAt: null,
-            }
+          ? { ...todo, completed: false, completedAt: null }
           : todo
       )
     );
   }
 
-  if (loading) {
-    return <p>Loading...</p>;
+  // FILTER
+  const filteredTodos =
+    selectedUser === "all"
+      ? todos
+      : todos.filter((todo) => todo.userId === Number(selectedUser));
+
+  // UNCOMPLETED + SORT
+  let uncompletedTodos = filteredTodos.filter((t) => !t.completed);
+
+  if (sortOrder === "asc") {
+    uncompletedTodos.sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  if (error) {
-    return <p>{error}</p>;
+  if (sortOrder === "desc") {
+    uncompletedTodos.sort((a, b) => b.title.localeCompare(a.title));
   }
+
+  // COMPLETED
+  const completedTodos = filteredTodos.filter((t) => t.completed);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div>
-      <h1>Todo React App</h1>
+      <h1>Todo App</h1>
+
+      {/* FILTER BY USERNAME */}
+      <div>
+        <label>Filter by user:</label>
+        <select onChange={(e) => setSelectedUser(e.target.value)}>
+          <option value="all">All users</option>
+
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.username}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label>Sort uncompleted:</label>
+        <select onChange={(e) => setSortOrder(e.target.value)}>
+          <option value="default">Default</option>
+          <option value="asc">A-Z</option>
+          <option value="desc">Z-A</option>
+        </select>
+      </div>
       <div>
         <h2>Uncompleted Todos</h2>
 
         {uncompletedTodos.slice(0, 10).map((todo) => (
           <div key={todo.id}>
-            <span>{todo.title}</span>
-
+            {todo.title}
             <button onClick={() => handleComplete(todo.id)}>
               Complete
             </button>
           </div>
         ))}
       </div>
-
       <div>
         <h2>Completed Todos</h2>
 
         {completedTodos.slice(0, 10).map((todo) => (
           <div key={todo.id}>
-            <span>{todo.title}</span>
-
+            {todo.title}
             <button onClick={() => handleUncomplete(todo.id)}>
               Uncomplete
             </button>
