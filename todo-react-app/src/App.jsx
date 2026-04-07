@@ -17,25 +17,33 @@ function App() {
       fetch("https://jsonplaceholder.typicode.com/users"),
     ])
       .then(([todosRes, usersRes]) => {
+        if (!todosRes.ok || !usersRes.ok) {
+          throw new Error("Failed to load data");
+        }
+
         return Promise.all([todosRes.json(), usersRes.json()]);
       })
       .then(([todosData, usersData]) => {
         setTodos(todosData);
-        setUsers(usersData);
+        setUsers(
+          [...usersData].sort((a, b) =>
+            a.username.localeCompare(b.username)
+          )
+        );
       })
-      .catch(() => {
-        setError("Error loading data");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .catch(() => setError("Error loading data"))
+      .finally(() => setLoading(false));
   }, []);
 
   function handleComplete(id) {
     setTodos(
       todos.map((todo) =>
         todo.id === id
-          ? { ...todo, completed: true, completedAt: new Date().toISOString() }
+          ? {
+              ...todo,
+              completed: true,
+              completedAt: new Date().toISOString(),
+            }
           : todo
       )
     );
@@ -45,43 +53,47 @@ function App() {
     setTodos(
       todos.map((todo) =>
         todo.id === id
-          ? { ...todo, completed: false, completedAt: null }
+          ? {
+              ...todo,
+              completed: false,
+              completedAt: null,
+            }
           : todo
       )
     );
   }
 
-  // FILTER
   const filteredTodos =
     selectedUser === "all"
       ? todos
       : todos.filter((todo) => todo.userId === Number(selectedUser));
 
-  // UNCOMPLETED + SORT
-  let uncompletedTodos = filteredTodos.filter((t) => !t.completed);
+  // UNCOMPLETED
+  let uncompletedTodos = filteredTodos.filter((todo) => !todo.completed);
 
   if (sortOrder === "asc") {
     uncompletedTodos.sort((a, b) => a.title.localeCompare(b.title));
-  }
-
-  if (sortOrder === "desc") {
+  } else if (sortOrder === "desc") {
     uncompletedTodos.sort((a, b) => b.title.localeCompare(a.title));
   }
 
-  // COMPLETED + SORT
-  let completedTodos = filteredTodos.filter((t) => t.completed);
+  // COMPLETED
+  let completedTodos = filteredTodos.filter((todo) => todo.completed);
 
-  if (completedSort === "asc") {
-    completedTodos.sort(
-      (a, b) => new Date(a.completedAt) - new Date(b.completedAt)
-    );
-  }
+  completedTodos.sort((a, b) => {
+    const dateA = new Date(a.completedAt || 0);
+    const dateB = new Date(b.completedAt || 0);
 
-  if (completedSort === "desc") {
-    completedTodos.sort(
-      (a, b) => new Date(b.completedAt) - new Date(a.completedAt)
-    );
-  }
+    if (completedSort === "asc") {
+      return dateA - dateB;
+    }
+
+    if (completedSort === "desc") {
+      return dateB - dateA;
+    }
+
+    return dateB - dateA;
+  });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -90,15 +102,13 @@ function App() {
     <div>
       <h1>Todo App</h1>
 
-      {/* FILTER BY USERNAME */}
       <div>
-        <label>Filter by user:</label>
+        <label>Filter by user: </label>
         <select
           value={selectedUser}
           onChange={(e) => setSelectedUser(e.target.value)}
         >
           <option value="all">All users</option>
-
           {users.map((user) => (
             <option key={user.id} value={user.id}>
               {user.username}
@@ -107,8 +117,13 @@ function App() {
         </select>
       </div>
 
+      <hr />
+
+      {/* UNCOMPLETED */}
       <div>
-        <label>Sort uncompleted:</label>
+        <h2>Uncompleted Todos</h2>
+
+        <label>Sort: </label>
         <select
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
@@ -117,19 +132,14 @@ function App() {
           <option value="asc">A-Z</option>
           <option value="desc">Z-A</option>
         </select>
-      </div>
-
-      <div>
-        <h2>Uncompleted Todos</h2>
 
         {uncompletedTodos.slice(0, visibleCount).map((todo) => (
           <div key={todo.id}>
-            {todo.title}
+            <p>{todo.title}</p>
             <button onClick={() => handleComplete(todo.id)}>Complete</button>
           </div>
         ))}
 
-        {/* LOAD MORE BUTTON */}
         {visibleCount < uncompletedTodos.length && (
           <button onClick={() => setVisibleCount(visibleCount + 10)}>
             Load More
@@ -137,8 +147,13 @@ function App() {
         )}
       </div>
 
+      <hr />
+
+      {/* COMPLETED */}
       <div>
-        <label>Sort by completed date:</label>
+        <h2>Completed Todos</h2>
+
+        <label>Sort by date: </label>
         <select
           value={completedSort}
           onChange={(e) => setCompletedSort(e.target.value)}
@@ -147,14 +162,10 @@ function App() {
           <option value="asc">Oldest first</option>
           <option value="desc">Newest first</option>
         </select>
-      </div>
 
-      <div>
-        <h2>Completed Todos</h2>
-
-        {completedTodos.slice(0, 10).map((todo) => (
+        {completedTodos.map((todo) => (
           <div key={todo.id}>
-            <div>{todo.title}</div>
+            <p>{todo.title}</p>
 
             {todo.completedAt && (
               <small>
