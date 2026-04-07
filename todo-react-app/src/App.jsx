@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./App.css"
 
 function App() {
   const [todos, setTodos] = useState([]);
@@ -26,9 +27,7 @@ function App() {
       .then(([todosData, usersData]) => {
         setTodos(todosData);
         setUsers(
-          [...usersData].sort((a, b) =>
-            a.username.localeCompare(b.username)
-          )
+          [...usersData].sort((a, b) => a.username.localeCompare(b.username))
         );
       })
       .catch(() => setError("Error loading data"))
@@ -63,12 +62,17 @@ function App() {
     );
   }
 
+  // Помощна функция за намиране на името на потребителя
+  const getUserName = (userId) => {
+    const user = users.find((u) => u.id === userId);
+    return user ? user.username : `User ${userId}`;
+  };
+
   const filteredTodos =
     selectedUser === "all"
       ? todos
       : todos.filter((todo) => todo.userId === Number(selectedUser));
 
-  // UNCOMPLETED
   let uncompletedTodos = filteredTodos.filter((todo) => !todo.completed);
 
   if (sortOrder === "asc") {
@@ -77,7 +81,6 @@ function App() {
     uncompletedTodos.sort((a, b) => b.title.localeCompare(a.title));
   }
 
-  // COMPLETED
   let completedTodos = filteredTodos.filter((todo) => todo.completed);
 
   completedTodos.sort((a, b) => {
@@ -95,90 +98,140 @@ function App() {
     return dateB - dateA;
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <p className="status">Loading...</p>;
+  if (error) return <p className="status error">{error}</p>;
 
   return (
-    <div>
-      <h1>Todo App</h1>
+    <div className="app">
+      <header>
+        <h1>
+          Todo React App
+          <img
+            className="header-img"
+            src="https://play-lh.googleusercontent.com/tc-joHbggyCAMNcdozaeg0W1QF3oQcmlj7UtwkS_Avl5w7sw1BEuU_Qflyweg2J7h4ekvNpNy6Uqm79_6_Eu"
+            alt="todo app"
+          />
+        </h1>
+      </header>
 
-      <div>
-        <label>Filter by user: </label>
-        <select
-          value={selectedUser}
-          onChange={(e) => setSelectedUser(e.target.value)}
-        >
-          <option value="all">All users</option>
-          {users.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.username}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <hr />
-
-      {/* UNCOMPLETED */}
-      <div>
-        <h2>Uncompleted Todos</h2>
-
-        <label>Sort: </label>
-        <select
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
-        >
-          <option value="default">Default</option>
-          <option value="asc">A-Z</option>
-          <option value="desc">Z-A</option>
-        </select>
-
-        {uncompletedTodos.slice(0, visibleCount).map((todo) => (
-          <div key={todo.id}>
-            <p>{todo.title}</p>
-            <button onClick={() => handleComplete(todo.id)}>Complete</button>
+      <main>
+        <section className="controls">
+          <div className="control-group">
+            <label htmlFor="userFilter">Filter by user</label>
+            <select
+              id="userFilter"
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+            >
+              <option value="all">All users</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.username}
+                </option>
+              ))}
+            </select>
           </div>
-        ))}
+        </section>
 
-        {visibleCount < uncompletedTodos.length && (
-          <button onClick={() => setVisibleCount(visibleCount + 10)}>
-            Load More
-          </button>
-        )}
-      </div>
+        <section className="boards">
+          <div className="todo-panel">
+            <div className="panel-header">
+              <div className="control-group">
+                <label htmlFor="sortUncompleted">Sort:</label>
+                <select
+                  id="sortUncompleted"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                >
+                  <option value="default">Default</option>
+                  <option value="asc">Title (asc)</option>
+                  <option value="desc">Title (desc)</option>
+                </select>
+              </div>
+              <h2>Uncompleted:</h2>
+            </div>
 
-      <hr />
+            {uncompletedTodos.length === 0 ? (
+              <p className="empty">No todos found.</p>
+            ) : (
+              <ul className="todo-list">
+                {uncompletedTodos.slice(0, visibleCount).map((todo) => (
+                  <li key={todo.id} className="todo-item">
+                    <div className="todo-text">
+                      <p className="todo-title">{todo.title}</p>
+                      <p className="todo-meta">User: {getUserName(todo.userId)}</p>
+                    </div>
 
-      {/* COMPLETED */}
-      <div>
-        <h2>Completed Todos</h2>
-
-        <label>Sort by date: </label>
-        <select
-          value={completedSort}
-          onChange={(e) => setCompletedSort(e.target.value)}
-        >
-          <option value="default">Default</option>
-          <option value="asc">Oldest first</option>
-          <option value="desc">Newest first</option>
-        </select>
-
-        {completedTodos.map((todo) => (
-          <div key={todo.id}>
-            <p>{todo.title}</p>
-
-            {todo.completedAt && (
-              <small>
-                Completed on: {new Date(todo.completedAt).toLocaleString()}
-              </small>
+                    <button onClick={() => handleComplete(todo.id)}>
+                      Complete
+                    </button>
+                  </li>
+                ))}
+              </ul>
             )}
 
-            <button onClick={() => handleUncomplete(todo.id)}>
-              Uncomplete
-            </button>
+            {visibleCount < uncompletedTodos.length && (
+              <button
+                className="load-more"
+                onClick={() => setVisibleCount(visibleCount + 10)}
+              >
+                Load More
+              </button>
+            )}
           </div>
-        ))}
-      </div>
+
+          <div className="todo-panel">
+            <div className="panel-header">
+              <div className="control-group">
+                <label htmlFor="sortCompleted">Sort:</label>
+                <select
+                  id="sortCompleted"
+                  value={completedSort}
+                  onChange={(e) => setCompletedSort(e.target.value)}
+                >
+                  <option value="default">Default</option>
+                  <option value="asc">Date (asc)</option>
+                  <option value="desc">Date (desc)</option>
+                </select>
+              </div>
+              <h2>Completed:</h2>
+            </div>
+
+            {completedTodos.length === 0 ? (
+              <p className="empty">No completed todos.</p>
+            ) : (
+              <ul className="todo-list">
+                {completedTodos.map((todo) => (
+                  <li key={todo.id} className="todo-item">
+                    <div className="todo-text">
+                      <p className="todo-title">{todo.title}</p>
+                      <p className="todo-meta">User: {getUserName(todo.userId)}</p>
+
+                      {todo.completedAt && (
+                        <p className="completed-date">
+                          Done on:{" "}
+                          {new Date(todo.completedAt).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+
+                    <button onClick={() => handleUncomplete(todo.id)}>
+                      Uncomplete
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>
+          Todo app with filtering, sorting, completed dates and load more
+          functionality.
+        </p>
+      </footer>
     </div>
   );
 }
