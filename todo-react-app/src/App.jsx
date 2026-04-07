@@ -27,6 +27,34 @@ function App() {
   const uncompletedTodos = todos.filter((todo) => !todo.completed);
   const completedTodos = todos.filter((todo) => todo.completed);
 
+  function handleComplete(id) {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id
+          ? {
+              ...todo,
+              completed: true,
+              completedAt: new Date().toISOString(), // за future extra
+            }
+          : todo
+      )
+    );
+  }
+
+  function handleUncomplete(id) {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id
+          ? {
+              ...todo,
+              completed: false,
+              completedAt: null,
+            }
+          : todo
+      )
+    );
+  }
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -38,18 +66,31 @@ function App() {
   return (
     <div>
       <h1>Todo React App</h1>
-
       <div>
         <h2>Uncompleted Todos</h2>
+
         {uncompletedTodos.slice(0, 10).map((todo) => (
-          <p key={todo.id}>{todo.title}</p>
+          <div key={todo.id}>
+            <span>{todo.title}</span>
+
+            <button onClick={() => handleComplete(todo.id)}>
+              Complete
+            </button>
+          </div>
         ))}
       </div>
 
       <div>
         <h2>Completed Todos</h2>
+
         {completedTodos.slice(0, 10).map((todo) => (
-          <p key={todo.id}>{todo.title}</p>
+          <div key={todo.id}>
+            <span>{todo.title}</span>
+
+            <button onClick={() => handleUncomplete(todo.id)}>
+              Uncomplete
+            </button>
+          </div>
         ))}
       </div>
     </div>
