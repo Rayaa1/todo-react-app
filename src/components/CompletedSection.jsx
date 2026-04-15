@@ -19,8 +19,8 @@ export default function CompletedSection({
             onChange={(e) => setCompletedSort(e.target.value)}
           >
             <option value="default">Default</option>
-            <option value="asc">Date (asc)</option>
-            <option value="desc">Date (desc)</option>
+            <option value="desc">Most recent</option>
+            <option value="asc">Oldest first</option>
           </select>
         </div>
         <h2>Completed:</h2>
