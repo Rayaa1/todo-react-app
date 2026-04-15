@@ -103,6 +103,21 @@ select {
   gap: 20px;
 }
 
+.todo-user,
+.completed-date {
+  font-size: 1.2rem;
+  color: #222;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.todo-user-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
 .todo-panel {
   border-radius: 15px;
   padding: 1em;
@@ -115,6 +130,22 @@ select {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.todo-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.todo-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+}
+
+.todo-list::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .todo-item {
@@ -125,6 +156,13 @@ select {
   padding: 12px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.todo-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18); 
 }
 
 .todo-text {
@@ -141,12 +179,6 @@ select {
 .todo-meta {
   font-size: 1rem;
   color: #f1f1f1;
-}
-
-.completed-date {
-  margin-top: 6px;
-  font-size: 1rem;
-  color: #1b1f42;
 }
 
 button {

@@ -3,12 +3,15 @@ export default function TodoItem({ todo, username, onComplete, onUncomplete }) {
     <li className="todo-item">
       <div className="todo-text">
         <p className="todo-title">{todo.title}</p>
+        <div className="todo-user-row">
+  <span className="todo-user">👤 {username}</span>
 
-        {todo.completedAt && (
-          <p className="completed-date">
-            Done on: {new Date(todo.completedAt).toLocaleString()}
-          </p>
-        )}
+  {todo.completedAt && (
+    <span className="completed-date">
+      {new Date(todo.completedAt).toLocaleString()}
+    </span>
+  )}
+</div>
       </div>
 
       {!todo.completed ? (
