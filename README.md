@@ -78,15 +78,11 @@ npm run dev
 
 ## 📷 Screenshot
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/feabbd71-aa74-45d0-98b2-654ff99c7ce9" width="800"/>
+  <img src="https://github.com/user-attachments/assets/d66f0643-cffc-4970-80c3-11c649a0523a" width="600"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/4f409852-dba1-41b5-9ad0-ada8162e7798" width="800"/>
-</p>
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/c1c0a800-ce69-4842-aafd-bb5439f91d41" width="800"/>
+  <img src="https://github.com/user-attachments/assets/ce21b904-ea26-4bb2-96f6-98d79fe1083d" width="600"/>
 </p>
 
 ## Requirements
