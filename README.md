@@ -86,7 +86,7 @@ npm run dev
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/d5189f1a-de13-4d54-b2a1-c962c977421f" width="800"/>
+  <img src="https://github.com/user-attachments/assets/c1c0a800-ce69-4842-aafd-bb5439f91d41" width="800"/>
 </p>
 
 ## Requirements
