@@ -1,5 +1,10 @@
 # Todo React App
 
+## Live Demo
+https://todo-react-app-iota-one.vercel.app/
+
+---
+
 ## Overview
 
 This is a Todo application built with React. The app allows users to manage tasks by separating them into **Uncompleted** and **Completed** sections. Users can filter, sort, and update todos dynamically.
@@ -21,8 +26,10 @@ This is a Todo application built with React. The app allows users to manage task
 ## Technologies Used
 
 * React (Hooks: useState, useEffect)
+* Vite
+* JavaScript (ES6+)
 * CSS
-* HTML
+* HTML5
 * JSONPlaceholder API
 
 ---
@@ -81,7 +88,6 @@ npm run dev
 <p align="center">
   <img src="https://github.com/user-attachments/assets/d5189f1a-de13-4d54-b2a1-c962c977421f" width="800"/>
 </p>
----
 
 ## Requirements
 
