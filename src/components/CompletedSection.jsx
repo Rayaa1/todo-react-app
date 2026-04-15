@@ -4,6 +4,8 @@ export default function CompletedSection({
   todos,
   completedSort,
   setCompletedSort,
+  visibleCount,
+  loadMore,
   getUserName,
   onUncomplete,
 }) {
@@ -28,7 +30,7 @@ export default function CompletedSection({
         <p className="empty">No completed todos.</p>
       ) : (
         <ul className="todo-list">
-          {todos.map((todo) => (
+          {todos.slice(0, visibleCount).map((todo) => (
             <TodoItem
               key={todo.id}
               todo={todo}
@@ -37,6 +39,12 @@ export default function CompletedSection({
             />
           ))}
         </ul>
+      )}
+
+      {visibleCount < todos.length && (
+        <button className="load-more" onClick={loadMore}>
+          Load More
+        </button>
       )}
     </div>
   );

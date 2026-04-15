@@ -42,7 +42,7 @@ function App() {
 
   // Reset pagination when filter changes
   useEffect(() => {
-    setVisibleCount(10);
+    setVisibleCount(5);
   }, [selectedUser]);
 
   // Complete todo
@@ -136,7 +136,7 @@ function App() {
             sortOrder={sortOrder}
             setSortOrder={setSortOrder}
             visibleCount={visibleCount}
-            loadMore={() => setVisibleCount((prev) => prev + 10)}
+            loadMore={() => setVisibleCount((prev) => prev + 5)}
             getUserName={getUserName}
             onComplete={handleComplete}
           />
@@ -147,6 +147,8 @@ function App() {
             setCompletedSort={setCompletedSort}
             getUserName={getUserName}
             onUncomplete={handleUncomplete}
+            visibleCount={visibleCount}
+            loadMore={() => setVisibleCount(prev => prev + 5)}
           />
         </section>
       </main>
