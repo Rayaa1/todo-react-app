@@ -16,7 +16,8 @@ function App() {
   const [selectedUser, setSelectedUser] = useState("all");
   const [sortOrder, setSortOrder] = useState("default");
   const [completedSort, setCompletedSort] = useState("default");
-  const [visibleCount, setVisibleCount] = useState(10);
+  const [visibleUncompleted, setVisibleUncompleted] = useState(5);
+  const [visibleCompleted, setVisibleCompleted] = useState(5);
 
   // Fetch todos + users
   useEffect(() => {
@@ -42,8 +43,10 @@ function App() {
 
   // Reset pagination when filter changes
   useEffect(() => {
-    setVisibleCount(5);
-  }, [selectedUser]);
+  setVisibleUncompleted(5);
+  setVisibleCompleted(5);
+}, [selectedUser]);
+
 
   // Complete todo
   function handleComplete(id) {
@@ -135,8 +138,8 @@ function App() {
             todos={uncompletedTodos}
             sortOrder={sortOrder}
             setSortOrder={setSortOrder}
-            visibleCount={visibleCount}
-            loadMore={() => setVisibleCount((prev) => prev + 5)}
+            visibleCount={visibleUncompleted}
+            loadMore={() => setVisibleUncompleted((prev) => prev + 5)}
             getUserName={getUserName}
             onComplete={handleComplete}
           />
@@ -147,8 +150,8 @@ function App() {
             setCompletedSort={setCompletedSort}
             getUserName={getUserName}
             onUncomplete={handleUncomplete}
-            visibleCount={visibleCount}
-            loadMore={() => setVisibleCount(prev => prev + 5)}
+            visibleCount={visibleCompleted}
+            loadMore={() => setVisibleCompleted(prev => prev + 5)}
           />
         </section>
       </main>
